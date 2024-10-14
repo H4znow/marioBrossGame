@@ -2,7 +2,7 @@ import time
 import pygame
 
 # Window dimensions
-WIDTH, HEIGHT = 1500, 300
+WIDTH, HEIGHT = 600, 300
 # Grid dimensions
 ROWS, COLS = 6, 75
 # Size of each cell
@@ -93,25 +93,27 @@ def apply_gravity():
     if player_pos[0] < ROWS - 1 and grid[player_pos[0] + 1][player_pos[1]] == 0:
         player_pos[0] += 1
 
+        apply_gravity()
+
 # Main loop
 while running:
     window.fill(WHITE)  # Fill the background with white
     draw_grid()         # Draw the grid and the player
     pygame.display.update()
     
-    apply_gravity()
-    
     if (in_jump):
         player_pos_before = [player_pos[0], player_pos[1]]
         
         # Downward diagonal
-        move_player(1, 0)
+        move_player(1, 1)
         
         if player_pos[0] != player_pos_before[0] or player_pos[1] != player_pos_before[1]:
             pygame.time.wait(200)
         
         in_jump = False
         last_time = time.time()
+
+        apply_gravity()
     elif (time.time() - last_time > 0.2):
         last_time = time.time()
         # Event management
@@ -125,6 +127,7 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT: # Move to the right
                     move_player(1, 0)
+                    apply_gravity()
                 elif event.key == pygame.K_UP: # Jump
                     in_jump = True
                     
