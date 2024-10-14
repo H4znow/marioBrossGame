@@ -13,7 +13,7 @@ class PygamePrint():
         self.FILLED_DEFAULT_COLOR = (0, 255, 0)
         self.FILLED_PIECE_COLOR = (255, 255, 0)
         self.FILLED_PLAYER_COLOR = (0, 0, 255)
-        self.WAIT_TIME = 0.2
+        self.WAIT_TIME = 0.03
 
         pygame.init()
         self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
@@ -51,3 +51,6 @@ class PygamePrint():
 
         pygame.display.update()  # Update the display
         time.sleep(self.WAIT_TIME)
+    
+    def quit(self) -> None:
+        pygame.quit()

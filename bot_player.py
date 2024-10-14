@@ -1,3 +1,4 @@
+# ======================= Bot player part (TEST) =======================
 class BotPlayer():
     def __init__(self, game) -> None:
         self.game = game

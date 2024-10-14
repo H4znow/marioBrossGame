@@ -1,8 +1,6 @@
 from pygame_print import PygamePrint
 import copy
 
-
-
 # ======================= Game part ======================= 
 class Game:
     def __init__(self, start_pos, grid, print_game) -> None:
@@ -14,7 +12,6 @@ class Game:
         self.score = 0
         self.ROWS = len(grid)
         self.COLS = len(grid[0])
-        self.in_jump = False
         self.running = True
 
         if (self.print_game):
@@ -43,32 +40,33 @@ class Game:
             self.apply_gravity()
     
     def new_event(self, move) -> None:
-        if (self.in_jump):      
-            # Downward diagonal
-            self.move_player(1, 1)
-            self.in_jump = False
-            self.apply_gravity()
+        in_jump = False
 
-            if (self.print_game):
-                self.pygame_print.draw_grid()
-        
         if move == "RIGHT":
             self.move_player(1, 0)
             self.apply_gravity()
         elif move == "JUMP":
-            self.in_jump = True      
+            in_jump = True      
             # Rising diagonal
             self.move_player(1, -1)
         
         if (self.print_game):
             self.pygame_print.draw_grid()
         
+        if (in_jump):      
+            # Downward diagonal
+            self.move_player(1, 1)
+            self.apply_gravity()
+
+            if (self.print_game):
+                self.pygame_print.draw_grid()
+        
         # Victory or defeat condition
         if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
             self.score += 100
             self.running = False
+            self.pygame_print.quit()
         elif self.player_pos[0] == self.ROWS - 1 and self.grid[self.player_pos[0]][self.player_pos[1]] == 0:
             self.score = -100
             self.running = False
-
-
+            self.pygame_print.quit()

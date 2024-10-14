@@ -1,5 +1,7 @@
 from game import Game
 from bot_player import BotPlayer
+from human_player import HumanPlayer
+
 # ======================= Main part =======================
 
 # Example map (0 = empty, 1 = full, 5 coin, 333 = arrival)
@@ -17,4 +19,4 @@ player_pos = [3, 5]
 
 game = Game(player_pos, grid, True)
 
-player = BotPlayer(game)
+player = HumanPlayer(game)
