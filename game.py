@@ -39,7 +39,68 @@ nb_diff = 0
 score = 0
 in_jump = False
 running = True
+print_pygame = False
 last_time = time.time()
+
+# ======================= Game part ======================= 
+
+# Function to move the player
+def move_player(dx, dy):
+    global nb_diff, score
+    
+    new_row = player_pos[0] + dy
+    new_col = player_pos[1] + dx
+    
+    # Check the limits of the grid
+    if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+        # Check whether the target cell is empty or the target cell is empty
+        if grid[new_row][new_col] in {0, 5, 333}:
+            player_pos[0], player_pos[1] = new_row, new_col
+            nb_diff += 1
+            
+            if grid[new_row][new_col] == 5:
+                score += 5
+                grid[new_row][new_col] = 0
+
+# Function to apply gravity (if the player doesn't have a brick underneath, he falls)
+def apply_gravity():
+    if player_pos[0] < ROWS - 1 and grid[player_pos[0] + 1][player_pos[1]] == 0:
+        player_pos[0] += 1
+
+        apply_gravity()
+
+# 38 up, 39 right
+def new_event(code):
+    global in_jump, score
+
+    if (in_jump):      
+        # Downward diagonal
+        move_player(1, 1)
+        in_jump = False
+        apply_gravity()
+    else:
+        if code == 39: # Move to the right
+            move_player(1, 0)
+            apply_gravity()
+        elif code == 38: # Jump
+            in_jump = True      
+            # Rising diagonal
+            move_player(1, -1)
+
+    # Victory or defeat condition
+    if grid[player_pos[0]][player_pos[1]] == 333:
+        score += 100
+
+        return (False, score)
+    
+    if player_pos[0] == ROWS - 1 and grid[player_pos[0]][player_pos[1]] == 0:
+        score = -100
+
+        return (False, score)
+    
+    return (True, score)
+
+# ======================= Pygame part ======================= 
 
 # Function for drawing the grid and the player
 def draw_grid():
@@ -68,33 +129,6 @@ def draw_grid():
     player_y = player_pos[0] * CELL_SIZE
     pygame.draw.rect(window, FILLED_PLAYER_COLOR, (player_x, player_y, CELL_SIZE, CELL_SIZE))
 
-# Function to move the player
-def move_player(dx, dy):
-    global nb_diff, score
-    
-    new_row = player_pos[0] + dy
-    new_col = player_pos[1] + dx
-    
-    # Check the limits of the grid
-    if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-        # Check whether the target cell is empty or the target cell is empty
-        if grid[new_row][new_col] in {0, 5, 333}:
-            player_pos[0], player_pos[1] = new_row, new_col
-            nb_diff += 1
-            
-            if grid[new_row][new_col] == 5:
-                score += 5
-                grid[new_row][new_col] = 0
-            elif grid[new_row][new_col] == 333:
-                score += 100
-
-# Function to apply gravity (if the player doesn't have a brick underneath, he falls)
-def apply_gravity():
-    if player_pos[0] < ROWS - 1 and grid[player_pos[0] + 1][player_pos[1]] == 0:
-        player_pos[0] += 1
-
-        apply_gravity()
-
 # Main loop
 while running:
     window.fill(WHITE)  # Fill the background with white
@@ -102,18 +136,9 @@ while running:
     pygame.display.update()
     
     if (in_jump):
-        player_pos_before = [player_pos[0], player_pos[1]]
-        
-        # Downward diagonal
-        move_player(1, 1)
-        
-        if player_pos[0] != player_pos_before[0] or player_pos[1] != player_pos_before[1]:
-            pygame.time.wait(200)
-        
-        in_jump = False
-        last_time = time.time()
+        running, _ = new_event(0)
 
-        apply_gravity()
+        last_time = time.time()
     elif (time.time() - last_time > 0.2):
         last_time = time.time()
         # Event management
@@ -126,24 +151,23 @@ while running:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT: # Move to the right
-                    move_player(1, 0)
-                    apply_gravity()
+                    running, _ = new_event(39)
                 elif event.key == pygame.K_UP: # Jump
-                    in_jump = True
-                    
-                    # Rising diagonal
-                    move_player(1, -1)
+                    player_pos_before = [player_pos[0], player_pos[1]]
+
+                    running, _ = new_event(38)
+
+                    if player_pos[0] != player_pos_before[0] or player_pos[1] != player_pos_before[1]:
+                        pygame.time.wait(200)
         
         # Delete other events that are too fast
         pygame.event.clear()
 
-    # Victory or defeat condition
-    if grid[player_pos[0]][player_pos[1]] == 333:
-        print(f"You've won with {score} points!")
-        running = False
-    elif player_pos[0] == ROWS - 1 and grid[player_pos[0]][player_pos[1]] == 0:
-        print("You've fallen into a hole!")
-        running = False
+# Victory or defeat condition
+if score == -100:
+    print("You've fallen into a hole!")
+else:
+    print(f"You've won with {score} points!")
 
 # Quit Pygame
 pygame.quit()
