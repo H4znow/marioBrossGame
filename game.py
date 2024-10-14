@@ -1,22 +1,153 @@
 import time
 import pygame
+import copy
 
-# Window dimensions
-WIDTH, HEIGHT = 600, 300
-# Grid dimensions
-ROWS, COLS = 6, 75
-# Size of each cell
-CELL_SIZE = 50
+# ======================= Print game part ======================= 
+class PygamePrint():
+    def __init__(self, game) -> None:
+        self.game = game
+        self.WIDTH, self.HEIGHT = 600, 300
+        self.CELL_SIZE = 50
+        self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+        self.FILLED_FINISH_COLOR = (255, 0, 0)
+        self.FILLED_DEFAULT_COLOR = (0, 255, 0)
+        self.FILLED_PIECE_COLOR = (255, 255, 0)
+        self.FILLED_PLAYER_COLOR = (0, 0, 255)
+        self.WAIT_TIME = 0.2
 
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-FILLED_FINISH_COLOR = (255, 0, 0)
-FILLED_DEFAULT_COLOR = (0, 255, 0)
-FILLED_PIECE_COLOR = (255, 255, 0)
-FILLED_PLAYER_COLOR = (0, 0, 255)
+        pygame.init()
+        self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        pygame.display.set_caption("Mario Bros")
 
-# Example map (0 = empty, 1 = full, 5 rooms, 333 = arrival)
+    
+    # Function for drawing the grid and the player
+    def draw_grid(self) -> None:
+        self.window.fill(self.WHITE)  # Fill the background with white
+
+        for row in range(self.game.ROWS):
+            for col in range(self.game.COLS):
+                # Position x, y of the top left corner of the cell
+                x = (col * self.CELL_SIZE) - (self.game.nb_diff * self.CELL_SIZE)
+                y = row * self.CELL_SIZE
+
+                # Draw filled cells
+                color = self.WHITE  # default colour
+                
+                if grid[row][col] == 1:
+                    color = self.FILLED_DEFAULT_COLOR
+                if grid[row][col] == 5:
+                    color = self.FILLED_PIECE_COLOR
+                elif grid[row][col] == 333:
+                    color = self.FILLED_FINISH_COLOR
+
+                pygame.draw.rect(self.window, color, (x, y, self.CELL_SIZE, self.CELL_SIZE))
+                # Draw the outline of each cell
+                pygame.draw.rect(self.window, self.BLACK, (x, y, self.CELL_SIZE, self.CELL_SIZE), 1)
+
+        # Draw the player
+        player_x = self.game.start_pos[1] * self.CELL_SIZE 
+        player_y = self.game.player_pos[0] * self.CELL_SIZE
+        pygame.draw.rect(self.window, self.FILLED_PLAYER_COLOR, (player_x, player_y, self.CELL_SIZE, self.CELL_SIZE))
+
+        pygame.display.update()  # Update the display
+        time.sleep(self.WAIT_TIME)
+
+# ======================= Game part ======================= 
+class Game:
+    def __init__(self, start_pos, grid, print_game) -> None:
+        self.start_pos = copy.deepcopy(start_pos)
+        self.player_pos = start_pos
+        self.grid = grid
+        self.print_game = print_game
+        self.nb_diff = 0
+        self.score = 0
+        self.ROWS = len(grid)
+        self.COLS = len(grid[0])
+        self.in_jump = False
+        self.running = True
+
+        if (self.print_game):
+            self.pygame_print = PygamePrint(self)
+            self.pygame_print.draw_grid()
+    
+    def move_player(self, dx, dy) -> None:
+        new_row = self.player_pos[0] + dy
+        new_col = self.player_pos[1] + dx
+        
+        # Check the limits of the grid
+        if 0 <= new_row < self.ROWS and 0 <= new_col < self.COLS:
+            # Check whether the target cell is empty or the target cell is empty
+            if self.grid[new_row][new_col] in {0, 5, 333}:
+                self.player_pos[0], self.player_pos[1] = new_row, new_col
+                self.nb_diff += 1
+
+                if self.grid[new_row][new_col] == 5:
+                    self.score += 5
+                    self.grid[new_row][new_col] = 0
+    
+    def apply_gravity(self) -> None:
+        if self.player_pos[0] < self.ROWS - 1 and self.grid[self.player_pos[0] + 1][self.player_pos[1]] == 0:
+            self.player_pos[0] += 1
+
+            self.apply_gravity()
+    
+    def new_event(self, move) -> None:
+        if (self.in_jump):      
+            # Downward diagonal
+            self.move_player(1, 1)
+            self.in_jump = False
+            self.apply_gravity()
+
+            if (self.print_game):
+                self.pygame_print.draw_grid()
+        
+        if move == "RIGHT":
+            self.move_player(1, 0)
+            self.apply_gravity()
+        elif move == "JUMP":
+            self.in_jump = True      
+            # Rising diagonal
+            self.move_player(1, -1)
+        
+        if (self.print_game):
+            self.pygame_print.draw_grid()
+        
+        # Victory or defeat condition
+        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
+            self.score += 100
+            self.running = False
+        elif self.player_pos[0] == self.ROWS - 1 and self.grid[self.player_pos[0]][self.player_pos[1]] == 0:
+            self.score = -100
+            self.running = False
+
+# ======================= Human player part (TODO) =======================
+class HumanPlayer():
+    def __init__(self, game) -> None:
+        self.game = game
+        self.play()
+    
+    def play(self) -> None:
+        while self.game.running:
+            user_input = int(input("Entrez un entier : "))
+            self.game.new_event(user_input)
+
+# ======================= Bot player part (TEST)=======================
+class BotPlayer():
+    def __init__(self, game) -> None:
+        self.game = game
+        self.play()
+    
+    def play(self) -> None:
+        events = ["RIGHT", "RIGHT", "RIGHT", "JUMP", "JUMP", "JUMP", "RIGHT", "JUMP", "JUMP", "JUMP", "RIGHT", "JUMP", "RIGHT", "JUMP", "RIGHT", "JUMP", "RIGHT", "RIGHT", "RIGHT", "RIGHT", "JUMP", "JUMP", "RIGHT", "JUMP", "JUMP", "RIGHT", "RIGHT", "JUMP", "JUMP", "RIGHT", "JUMP", "RIGHT","RIGHT"]
+
+        for event in events:
+            self.game.new_event(event)
+
+
+# ======================= Main part =======================
+
+# Example map (0 = empty, 1 = full, 5 coin, 333 = arrival)
 grid = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 333, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 333, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,145 +160,6 @@ grid = [
 # Initial player position
 player_pos = [3, 5]
 
-# Pygame initiator
-pygame.init()
-window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Mario Bros")
+game = Game(player_pos, grid, True)
 
-# Game variables
-nb_diff = 0
-score = 0
-in_jump = False
-running = True
-print_pygame = False
-last_time = time.time()
-
-# ======================= Game part ======================= 
-
-# Function to move the player
-def move_player(dx, dy):
-    global nb_diff, score
-    
-    new_row = player_pos[0] + dy
-    new_col = player_pos[1] + dx
-    
-    # Check the limits of the grid
-    if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-        # Check whether the target cell is empty or the target cell is empty
-        if grid[new_row][new_col] in {0, 5, 333}:
-            player_pos[0], player_pos[1] = new_row, new_col
-            nb_diff += 1
-            
-            if grid[new_row][new_col] == 5:
-                score += 5
-                grid[new_row][new_col] = 0
-
-# Function to apply gravity (if the player doesn't have a brick underneath, he falls)
-def apply_gravity():
-    if player_pos[0] < ROWS - 1 and grid[player_pos[0] + 1][player_pos[1]] == 0:
-        player_pos[0] += 1
-
-        apply_gravity()
-
-# 38 up, 39 right
-def new_event(code):
-    global in_jump, score
-
-    if (in_jump):      
-        # Downward diagonal
-        move_player(1, 1)
-        in_jump = False
-        apply_gravity()
-    else:
-        if code == 39: # Move to the right
-            move_player(1, 0)
-            apply_gravity()
-        elif code == 38: # Jump
-            in_jump = True      
-            # Rising diagonal
-            move_player(1, -1)
-
-    # Victory or defeat condition
-    if grid[player_pos[0]][player_pos[1]] == 333:
-        score += 100
-
-        return (False, score)
-    
-    if player_pos[0] == ROWS - 1 and grid[player_pos[0]][player_pos[1]] == 0:
-        score = -100
-
-        return (False, score)
-    
-    return (True, score)
-
-# ======================= Pygame part ======================= 
-
-# Function for drawing the grid and the player
-def draw_grid():
-    for row in range(ROWS):
-        for col in range(COLS):
-            # Position x, y of the top left corner of the cell
-            x = (col * CELL_SIZE) - (nb_diff * CELL_SIZE)
-            y = row * CELL_SIZE
-
-            # Draw filled cells
-            color = WHITE  # default colour
-            
-            if grid[row][col] == 1:
-                color = FILLED_DEFAULT_COLOR
-            if grid[row][col] == 5:
-                color = FILLED_PIECE_COLOR
-            elif grid[row][col] == 333:
-                color = FILLED_FINISH_COLOR
-
-            pygame.draw.rect(window, color, (x, y, CELL_SIZE, CELL_SIZE))
-            # Draw the outline of each cell
-            pygame.draw.rect(window, BLACK, (x, y, CELL_SIZE, CELL_SIZE), 1)
-
-    # Draw the player
-    player_x = 5 * CELL_SIZE # 5: player's initial position
-    player_y = player_pos[0] * CELL_SIZE
-    pygame.draw.rect(window, FILLED_PLAYER_COLOR, (player_x, player_y, CELL_SIZE, CELL_SIZE))
-
-# Main loop
-while running:
-    window.fill(WHITE)  # Fill the background with white
-    draw_grid()         # Draw the grid and the player
-    pygame.display.update()
-    
-    if (in_jump):
-        running, _ = new_event(0)
-
-        last_time = time.time()
-    elif (time.time() - last_time > 0.2):
-        last_time = time.time()
-        # Event management
-        events = pygame.event.get()
-        
-        if len(events) != 0:
-            event = events[0]
-            
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT: # Move to the right
-                    running, _ = new_event(39)
-                elif event.key == pygame.K_UP: # Jump
-                    player_pos_before = [player_pos[0], player_pos[1]]
-
-                    running, _ = new_event(38)
-
-                    if player_pos[0] != player_pos_before[0] or player_pos[1] != player_pos_before[1]:
-                        pygame.time.wait(200)
-        
-        # Delete other events that are too fast
-        pygame.event.clear()
-
-# Victory or defeat condition
-if score == -100:
-    print("You've fallen into a hole!")
-else:
-    print(f"You've won with {score} points!")
-
-# Quit Pygame
-pygame.quit()
+player = BotPlayer(game)
