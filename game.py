@@ -84,6 +84,7 @@ def move_player(dx, dy):
             
             if grid[new_row][new_col] == 5:
                 score += 5
+                grid[new_row][new_col] = 0
             elif grid[new_row][new_col] == 333:
                 score += 100
 
