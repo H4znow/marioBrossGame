@@ -27,7 +27,7 @@ class QLearningPlayer:
                 return self.game.get_random_action()
             return np.argmax(self.q_table[state])
 
-    def update_q_table(self, action, reward, next_state, penalty=1):
+    def update_q_table(self, action, reward, next_state, penalty=2):
         state = self.get_state()
         max_future_q = np.max(self.q_table[next_state])
         current_q = self.q_table[state][action]

@@ -63,11 +63,13 @@ class Game:
                 self.pygame_print.draw_grid()
         
         # Victory or defeat condition
-        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333 or self.grid[self.player_pos[0]-1][self.player_pos[1]] == 333 :
+        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
+            print("Victory!")
             self.score += 100
             self.running = False
             self.pygame_print.quit()
         elif self.player_pos[0] == self.ROWS - 1 and self.grid[self.player_pos[0]][self.player_pos[1]] == 0:
+            print("Defeat!")
             self.score = -100
             self.running = False
             self.pygame_print.quit()
