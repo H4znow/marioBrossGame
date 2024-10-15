@@ -34,7 +34,7 @@ class Game:
                     self.grid[new_row][new_col] = 0
     
     def apply_gravity(self) -> None:
-        if self.player_pos[0] < self.ROWS - 1 and self.grid[self.player_pos[0] + 1][self.player_pos[1]] == 0:
+        if self.player_pos[0] < self.ROWS - 1 and self.grid[self.player_pos[0] + 1][self.player_pos[1]] in {0, 5}:
             self.player_pos[0] += 1
 
             self.apply_gravity()
@@ -65,8 +65,35 @@ class Game:
         if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
             self.score += 100
             self.running = False
-            self.pygame_print.quit()
+
+            if (self.print_game):
+                self.pygame_print.quit()
         elif self.player_pos[0] == self.ROWS - 1 and self.grid[self.player_pos[0]][self.player_pos[1]] == 0:
             self.score = -100
             self.running = False
-            self.pygame_print.quit()
+
+            if (self.print_game):
+                self.pygame_print.quit()
+    
+    # Return all valid moves
+    def get_possible_moves(self):
+        possible_moves = []
+
+        if self.grid[self.player_pos[0]][self.player_pos[1] + 1] in {0, 5, 333}:  # Right is possible
+            possible_moves.append("RIGHT")
+
+        if self.player_pos[0] > 0 and self.grid[self.player_pos[0] - 1][self.player_pos[1]] in {0, 5, 333} and self.grid[self.player_pos[0] - 1][self.player_pos[1] + 1] in {0, 5, 333}:  # Jump is possible
+            possible_moves.append("JUMP")
+
+        return possible_moves
+    
+    # Return a deep copy of the game state for simulation
+    def copy(self):
+        return Game(copy.deepcopy(self.player_pos), copy.deepcopy(self.grid), False)
+
+    # Reward system for win, loss, or intermediate steps
+    def get_reward(self):
+        if not self.running:
+            return self.score  # The score is already set on victory/loss
+        
+        return 0
