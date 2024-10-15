@@ -21,4 +21,4 @@ player_pos = [3, 5]
 game = Game(player_pos, grid, True)
 
 player = QLearningPlayer(game)
-player.train(150)
+player.train(500)

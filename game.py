@@ -5,8 +5,9 @@ import copy
 # ======================= Game part ======================= 
 class Game:
     def __init__(self, start_pos, grid, print_game) -> None:
-        self.start_pos = copy.deepcopy(start_pos)
-        self.player_pos = start_pos
+        self.start_pos = start_pos
+        self.player_pos = copy.deepcopy(start_pos)
+        self.original_grid = copy.deepcopy(grid)
         self.grid = grid
         self.print_game = print_game
         self.nb_diff = 0
@@ -75,13 +76,14 @@ class Game:
             self.pygame_print.quit()
 
     def get_state(self) -> int:
-        return self.player_pos[0]-3
+        return self.player_pos[1]
     
     def reset(self) -> None:
         self.player_pos = copy.deepcopy(self.start_pos)
         self.nb_diff = 0
         self.score = 0
         self.running = True
+        self.grid = copy.deepcopy(self.original_grid)
         self.pygame_print.__init__(self)
 
         if (self.print_game):
@@ -96,4 +98,5 @@ class Game:
         return self.score, not self.running
     
     def get_random_action(self) -> int:
+        # Choose randomly between RIGHT and JUMP
         return random.randint(0, 1)
