@@ -1,6 +1,7 @@
 from game import Game
 from bot_player import BotPlayer
 from human_player import HumanPlayer
+from q_learning_player import QLearningPlayer
 
 # ======================= Main part =======================
 
@@ -19,4 +20,5 @@ player_pos = [3, 5]
 
 game = Game(player_pos, grid, True)
 
-player = HumanPlayer(game)
+player = QLearningPlayer(game)
+player.train(1000)

@@ -1,3 +1,4 @@
+import random
 from pygame_print import PygamePrint
 import copy
 
@@ -62,7 +63,7 @@ class Game:
                 self.pygame_print.draw_grid()
         
         # Victory or defeat condition
-        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
+        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333 or self.grid[self.player_pos[0]-1][self.player_pos[1]] == 333 :
             self.score += 100
             self.running = False
             self.pygame_print.quit()
@@ -70,3 +71,27 @@ class Game:
             self.score = -100
             self.running = False
             self.pygame_print.quit()
+
+    def get_state(self) -> int:
+        return self.player_pos[0]-3
+    
+    def reset(self) -> None:
+        self.player_pos = copy.deepcopy(self.start_pos)
+        self.nb_diff = 0
+        self.score = 0
+        self.running = True
+        self.pygame_print.__init__(self)
+
+        if (self.print_game):
+            self.pygame_print.draw_grid()
+    
+    def step(self, action) -> tuple:
+        if action == 0:
+            self.new_event("RIGHT")
+        elif action == 1:
+            self.new_event("JUMP")
+        
+        return self.score, not self.running
+    
+    def get_random_action(self) -> int:
+        return random.randint(0, 1)
