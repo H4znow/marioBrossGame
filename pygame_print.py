@@ -62,12 +62,12 @@ class PygamePrint():
                     self.draw_arrow(qtable[col], x, y)
 
         # Draw the player
-        player_x = self.game.start_pos[1] * self.CELL_SIZE 
-        player_y = self.game.player_pos[0] * self.CELL_SIZE
+        player_x = self.game.start_pos[0] * self.CELL_SIZE 
+        player_y = self.game.player_pos[1] * self.CELL_SIZE
         pygame.draw.rect(self.window, self.FILLED_PLAYER_COLOR, (player_x, player_y, self.CELL_SIZE, self.CELL_SIZE))
         
-        if self.qtable and self.game.grid[self.game.player_pos[0] - 1][self.game.player_pos[1]] in {0, 5, 333}:
-            self.draw_arrow(qtable[self.game.player_pos[1]], player_x, player_y)
+        if self.qtable and self.game.grid[self.game.player_pos[1] - 1][self.game.player_pos[0]] in {0, 5, 333}:
+            self.draw_arrow(qtable[self.game.player_pos[0]], player_x, player_y)
 
         pygame.display.update()  # Update the display
         time.sleep(self.wait_time)

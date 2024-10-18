@@ -11,7 +11,7 @@ class QTablePlayer():
         qtable = np.load("q_table.npy")
         
         while self.game.running:
-            event = qtable[self.game.player_pos[1]]
+            event = qtable[self.game.player_pos[0]]
             
             new_event = "JUMP" if event[0] < event[1] else "RIGHT"
             self.game.new_event(new_event)

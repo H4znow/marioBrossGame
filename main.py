@@ -18,10 +18,10 @@ grid = [
 ]
 
 # Initial player position
-player_pos = [3, 5]
+player_pos = [5, 3]
 
 # print_game always true for HumanPlayer
-game = Game(player_pos, grid, True, True)
+game = Game(start_pos=player_pos, grid=grid, print_game=True, qtable=True, wait_time=0.05)
 
 # human = HumanPlayer(game)
 # human.play()
@@ -35,6 +35,6 @@ game = Game(player_pos, grid, True, True)
 q_table = QTablePlayer(game)
 q_table.play()
 
-# game = Game(player_pos, grid, False, False)
+# game = Game(player_pos, grid)
 # q_learning = QLearningPlayer(game)
 # q_learning.train(1000)

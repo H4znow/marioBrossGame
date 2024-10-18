@@ -21,14 +21,14 @@ class Game:
             self.pygame_print.draw_grid()
     
     def move_player(self, dx, dy) -> None:
-        new_row = self.player_pos[0] + dy
-        new_col = self.player_pos[1] + dx
+        new_col = self.player_pos[0] + dx
+        new_row = self.player_pos[1] + dy
         
         # Check the limits of the grid
         if 0 <= new_row < self.ROWS and 0 <= new_col < self.COLS:
             # Check whether the target cell is empty or the target cell is empty
             if self.grid[new_row][new_col] in {0, 5, 333}:
-                self.player_pos[0], self.player_pos[1] = new_row, new_col
+                self.player_pos[1], self.player_pos[0] = new_row, new_col
                 self.nb_diff += 1
 
                 if self.grid[new_row][new_col] == 5:
@@ -36,8 +36,8 @@ class Game:
                     self.grid[new_row][new_col] = 0
     
     def apply_gravity(self) -> None:
-        if self.player_pos[0] < self.ROWS - 1 and self.grid[self.player_pos[0] + 1][self.player_pos[1]] in {0, 5}:
-            self.player_pos[0] += 1
+        if self.player_pos[1] < self.ROWS - 1 and self.grid[self.player_pos[1] + 1][self.player_pos[0]] in {0, 5}:
+            self.player_pos[1] += 1
 
             self.apply_gravity()
     
@@ -64,14 +64,14 @@ class Game:
                 self.pygame_print.draw_grid()
         
         # Victory or defeat condition
-        if self.grid[self.player_pos[0]][self.player_pos[1]] == 333:
+        if self.grid[self.player_pos[1]][self.player_pos[0]] == 333:
             print("Victory!")
             self.score += 100
             self.running = False
 
             if (self.print_game):
                 self.pygame_print.quit()
-        elif self.player_pos[0] == self.ROWS - 1 and self.grid[self.player_pos[0]][self.player_pos[1]] == 0:
+        elif self.player_pos[1] == self.ROWS - 1 and self.grid[self.player_pos[1]][self.player_pos[0]] == 0:
             print("Defeat!")
             self.score = -100
             self.running = False
@@ -80,7 +80,7 @@ class Game:
                 self.pygame_print.quit()
     
     def get_state(self) -> int:
-        return self.player_pos[1]
+        return self.player_pos[0]
     
     def reset(self) -> None:
         self.player_pos = copy.deepcopy(self.start_pos)
@@ -109,10 +109,10 @@ class Game:
     def get_possible_moves(self) -> list:
         possible_moves = []
 
-        if self.grid[self.player_pos[0]][self.player_pos[1] + 1] in {0, 5, 333}:  # Right is possible
+        if self.grid[self.player_pos[1]][self.player_pos[0] + 1] in {0, 5, 333}:  # Right is possible
             possible_moves.append("RIGHT")
 
-        if self.player_pos[0] > 0 and self.grid[self.player_pos[0] - 1][self.player_pos[1]] in {0, 5, 333} and self.grid[self.player_pos[0] - 1][self.player_pos[1] + 1] in {0, 5, 333}:  # Jump is possible
+        if self.player_pos[1] > 0 and self.grid[self.player_pos[1] - 1][self.player_pos[0]] in {0, 5, 333} and self.grid[self.player_pos[1] - 1][self.player_pos[0] + 1] in {0, 5, 333}:  # Jump is possible
             possible_moves.append("JUMP")
 
         return possible_moves
@@ -124,6 +124,6 @@ class Game:
     # Reward system for win, loss, or intermediate steps
     def get_reward(self) -> float:
         if not self.running:
-            return self.score + (self.player_pos[1] - self.start_pos[1]) / 100  # There's also a reward for getting around  # The score is already set on victory/loss
+            return self.score + (self.player_pos[0] - self.start_pos[0]) / 100  # There's also a reward for getting around  # The score is already set on victory/loss
         
         return 0
