@@ -90,7 +90,7 @@ class Game:
         self.grid = copy.deepcopy(self.original_grid)
         
         if (self.print_game):
-            self.pygame_print.__init__(game=self, qtable=self.pygame_print.qtable, wait_time=self.pygame_print.wait_timee)
+            self.pygame_print.__init__(game=self, qtable=self.pygame_print.qtable, wait_time=self.pygame_print.wait_time)
             self.pygame_print.draw_grid()
     
     def step(self, action) -> tuple:

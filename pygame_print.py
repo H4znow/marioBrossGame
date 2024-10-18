@@ -25,8 +25,8 @@ class PygamePrint():
         center = (x + self.CELL_SIZE // 3, y + self.CELL_SIZE // 2)
         
         if direction[0] < direction[1]: # Jump
-            pygame.draw.line(self.window, self.BLACK, center, (center[0], center[1] - 15), 3)
-            pygame.draw.polygon(self.window, self.BLACK, [(center[0], center[1] - 20), (center[0] - 5, center[1] - 10), (center[0] + 5, center[1] - 10)])
+            pygame.draw.line(self.window, self.BLACK, (center[0] + 8, center[1] + 8), (center[0] + 8, center[1] - 7), 3)
+            pygame.draw.polygon(self.window, self.BLACK, [(center[0] + 8, center[1] - 12), (center[0] + 3, center[1] - 2), (center[0] + 13, center[1] - 2)])
         else: # Right
             pygame.draw.line(self.window, self.BLACK, center, (center[0] + 15, center[1]), 3)
             pygame.draw.polygon(self.window, self.BLACK, [(center[0] + 20, center[1]), (center[0] + 10, center[1] - 5), (center[0] + 10, center[1] + 5)])
