@@ -1,20 +1,19 @@
 import math
 import random
 
+from game import Game
+
 # ======================= MCTS player part =======================
 class MCTSPlayer:
-    def __init__(self, game, iterations=20, exploration_weight=1.4):
+    def __init__(self, game: Game, iterations=20, exploration_weight=1.4):
         self.game = game
         self.iterations = iterations  # Number of iterations for MCTS
         self.exploration_weight = exploration_weight  # Exploration/exploitation balance weight
         self.Q = {}  # Total reward of each state
         self.N = {}  # Number of visits to each state
         self.children = {}  # List of possible moves for each state
-        
-        # Main game play
-        self.play()
 
-    def choose(self):
+    def choose(self) -> str:
         # Perform MCTS to select the best move
         for _ in range(self.iterations):
             self.run_simulation()
@@ -31,7 +30,7 @@ class MCTSPlayer:
         
         return best_move
 
-    def run_simulation(self):
+    def run_simulation(self) -> None:
         # Start from a copy of the current game state
         simulation_game = self.game.copy()
         path = []
@@ -69,7 +68,7 @@ class MCTSPlayer:
                 self.N[(state, move)] = 1
                 self.Q[(state, move)] = reward
 
-    def select_move(self, state):
+    def select_move(self, state) -> str:
         # Upper Confidence Bound for Trees (UCT)
         total_visits = sum(self.N.get((state, move), 0) for move in self.children[state])
         log_total_visits = math.log(total_visits + 1)
@@ -87,7 +86,7 @@ class MCTSPlayer:
         # Return the move with the highest UCT value
         return max(self.children[state], key=uct)
 
-    def simulate_to_end(self, game):
+    def simulate_to_end(self, game) -> float:
         # Simulate random moves until the game ends and return the final reward
         while game.running:
             possible_moves = game.get_possible_moves()
@@ -100,11 +99,11 @@ class MCTSPlayer:
 
         return game.get_reward()
 
-    def serialize(self, game):
+    def serialize(self, game) -> tuple:
         # Serialize the game state as a string (player position + grid)
         return (tuple(game.player_pos), tuple(tuple(row) for row in game.grid))
     
-    def play(self):
+    def play(self) -> None:
         # Keep playing while the game is still running
         while self.game.running:
             # Run MCTS to determine the next move

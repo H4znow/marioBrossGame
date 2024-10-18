@@ -4,7 +4,7 @@ import numpy as np
 
 # ======================= Print game part ======================= 
 class PygamePrint():
-    def __init__(self, game, qtable=False) -> None:
+    def __init__(self, game, qtable=False, wait_time=0.03) -> None:
         self.game = game
         self.WIDTH, self.HEIGHT = 600, 300
         self.CELL_SIZE = 50
@@ -14,20 +14,20 @@ class PygamePrint():
         self.FILLED_DEFAULT_COLOR = (0, 255, 0)
         self.FILLED_PIECE_COLOR = (255, 255, 0)
         self.FILLED_PLAYER_COLOR = (0, 0, 255)
-        self.WAIT_TIME = 0.03
+        self.wait_time = wait_time
         self.qtable = qtable
 
         pygame.init()
         self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Mario Bros")
     
-    def draw_arrow(self, direction, x, y):
+    def draw_arrow(self, direction, x, y) -> None:
         center = (x + self.CELL_SIZE // 3, y + self.CELL_SIZE // 2)
         
-        if direction[0] < direction[1]:
+        if direction[0] < direction[1]: # Jump
             pygame.draw.line(self.window, self.BLACK, center, (center[0], center[1] - 15), 3)
             pygame.draw.polygon(self.window, self.BLACK, [(center[0], center[1] - 20), (center[0] - 5, center[1] - 10), (center[0] + 5, center[1] - 10)])
-        else:
+        else: # Right
             pygame.draw.line(self.window, self.BLACK, center, (center[0] + 15, center[1]), 3)
             pygame.draw.polygon(self.window, self.BLACK, [(center[0] + 20, center[1]), (center[0] + 10, center[1] - 5), (center[0] + 10, center[1] + 5)])
     
@@ -70,7 +70,7 @@ class PygamePrint():
             self.draw_arrow(qtable[self.game.player_pos[1]], player_x, player_y)
 
         pygame.display.update()  # Update the display
-        time.sleep(self.WAIT_TIME)
+        time.sleep(self.wait_time)
     
     def quit(self) -> None:
         pygame.quit()

@@ -1,5 +1,6 @@
 import numpy as np
 import random
+
 from game import Game
 
 class QLearningPlayer:
@@ -19,17 +20,18 @@ class QLearningPlayer:
             
         self.state = self.get_state()
 
-    def get_state(self):
+    def get_state(self) -> int:
         return self.game.get_state()
 
     def choose_action(self):
         if random.uniform(0, 1) < self.exploration_rate:
             return self.game.get_random_action()
-        else:
-            state = self.state
-            return np.argmax(self.q_table[state])
+        
+        state = self.state
+        
+        return np.argmax(self.q_table[state])
 
-    def update_q_table(self, action, reward, next_state, penalty=1):
+    def update_q_table(self, action, reward, next_state, penalty=1) -> None:
         state = self.state
         max_future_q = np.max(self.q_table[next_state])
         current_q = self.q_table[state][action]
@@ -40,18 +42,21 @@ class QLearningPlayer:
         # Q-learning formula with penalty
         self.q_table[state][action] = (1 - self.learning_rate) * current_q + self.learning_rate * (adjusted_reward + self.discount_factor * max_future_q)
     
-    def play_step(self):
+    def play_step(self) -> bool:
         action = self.choose_action()
         reward, done = self.game.step(action)
+        
         if done :
             print("reward: ", reward)
+            
         next_state = self.get_state()
         self.update_q_table(action, reward, next_state)
         self.state = next_state
+        
         return done        
             
 
-    def train(self, episodes):
+    def train(self, episodes) -> None:
         self.exploration_decay = 1 / episodes
         
         for episode in range(episodes):
@@ -60,11 +65,14 @@ class QLearningPlayer:
             print(f"Episode {episode}")
             self.state = self.game.start_pos[1]
             done = False
+            
             while not done:
+                
                 done = self.play_step()
             self.save_q_table("q_table.npy")
+            
         print(self.q_table)
 
-    def save_q_table(self, filename):
+    def save_q_table(self, filename) -> None:
         np.save(filename, self.q_table)
             

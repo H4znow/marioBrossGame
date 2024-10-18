@@ -1,8 +1,9 @@
 from game import Game
-from bot_player import BotPlayer
 from human_player import HumanPlayer
-from q_learning_player import QLearningPlayer
+from bot_player import BotPlayer
 from mcts_player import MCTSPlayer
+from q_learning_player import QLearningPlayer
+from q_table_player import QTablePlayer
 
 # ======================= Main part =======================
 
@@ -20,12 +21,20 @@ grid = [
 player_pos = [3, 5]
 
 # print_game always true for HumanPlayer
-# game = Game(player_pos, grid, True, False)
-# player = MCTSPlayer(game)
-
 game = Game(player_pos, grid, True, True)
-player = HumanPlayer(game)
+
+# human = HumanPlayer(game)
+# human.play()
+
+# bot = BotPlayer(game)
+# bot.play()
+
+# mcts = MCTSPlayer(game)
+# mcts.play()
+
+q_table = QTablePlayer(game)
+q_table.play()
 
 # game = Game(player_pos, grid, False, False)
-# player = QLearningPlayer(game)
-# player.train(1000)
+# q_learning = QLearningPlayer(game)
+# q_learning.train(1000)
