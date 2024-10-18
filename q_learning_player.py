@@ -3,16 +3,20 @@ import random
 from game import Game
 
 class QLearningPlayer:
-    def __init__(self, game: Game, learning_rate=0.1, discount_factor=0.99, exploration_rate=1.0, exploration_decay=1/500):
+    def __init__(self, game: Game, learning_rate=0.1, discount_factor=0.99, exploration_rate=1.0, load_qtable=False):
         self.game = game
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.exploration_rate = exploration_rate
-        self.exploration_decay = exploration_decay
+        self.exploration_decay = 0.001
         self.nb_actions = 2
         self.nb_states = self.game.COLS
         self.penalty = -0.1
         self.q_table = np.zeros((self.nb_states,self.nb_actions))
+        
+        if load_qtable:
+            self.q_table = np.load("q_table.npy")
+            
         self.state = self.get_state()
 
     def get_state(self):
@@ -48,6 +52,8 @@ class QLearningPlayer:
             
 
     def train(self, episodes):
+        self.exploration_decay = 1 / episodes
+        
         for episode in range(episodes):
             self.game.reset()
             self.exploration_rate = (episodes - episode) * self.exploration_decay
@@ -56,7 +62,7 @@ class QLearningPlayer:
             done = False
             while not done:
                 done = self.play_step()
-        self.save_q_table("q_table.npy")
+            self.save_q_table("q_table.npy")
         print(self.q_table)
 
     def save_q_table(self, filename):

@@ -4,11 +4,11 @@ import copy
 
 # ======================= Game part ======================= 
 class Game:
-    def __init__(self, start_pos, grid, print_game) -> None:
-        self.start_pos = start_pos
+    def __init__(self, start_pos, grid, print_game, qtable=False) -> None:
+        self.start_pos = copy.deepcopy(start_pos)
         self.player_pos = copy.deepcopy(start_pos)
         self.original_grid = copy.deepcopy(grid)
-        self.grid = grid
+        self.grid = copy.deepcopy(grid)
         self.print_game = print_game
         self.nb_diff = 0
         self.score = 0
@@ -17,7 +17,7 @@ class Game:
         self.running = True
 
         if (self.print_game):
-            self.pygame_print = PygamePrint(self)
+            self.pygame_print = PygamePrint(self, qtable)
             self.pygame_print.draw_grid()
     
     def move_player(self, dx, dy) -> None:
@@ -88,9 +88,9 @@ class Game:
         self.score = 0
         self.running = True
         self.grid = copy.deepcopy(self.original_grid)
-        self.pygame_print.__init__(self)
-
+        
         if (self.print_game):
+            self.pygame_print.__init__(self, self.pygame_print.qtable)
             self.pygame_print.draw_grid()
     
     def step(self, action) -> tuple:
@@ -99,7 +99,7 @@ class Game:
         elif action == 1:
             self.new_event("JUMP")
         
-        return self.score, not self.running
+        return self.get_reward(), not self.running
     
     def get_random_action(self) -> int:
         # Choose randomly between RIGHT and JUMP
@@ -124,6 +124,6 @@ class Game:
     # Reward system for win, loss, or intermediate steps
     def get_reward(self):
         if not self.running:
-            return self.score  # The score is already set on victory/loss
+            return self.score + (self.player_pos[1] - self.start_pos[1]) / 100  # There's also a reward for getting around  # The score is already set on victory/loss
         
         return 0

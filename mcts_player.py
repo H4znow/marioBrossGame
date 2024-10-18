@@ -98,7 +98,7 @@ class MCTSPlayer:
             random_move = random.choice(possible_moves)
             game.new_event(random_move)
 
-        return game.get_reward() + (game.player_pos[1] - game.start_pos[1]) / 100  # There's also a reward for getting around
+        return game.get_reward()
 
     def serialize(self, game):
         # Serialize the game state as a string (player position + grid)

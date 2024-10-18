@@ -20,6 +20,12 @@ grid = [
 player_pos = [3, 5]
 
 # print_game always true for HumanPlayer
-game = Game(player_pos, grid, True)
+# game = Game(player_pos, grid, True, False)
+# player = MCTSPlayer(game)
 
-player = MCTSPlayer(game)
+game = Game(player_pos, grid, True, True)
+player = HumanPlayer(game)
+
+# game = Game(player_pos, grid, False, False)
+# player = QLearningPlayer(game)
+# player.train(1000)
