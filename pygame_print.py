@@ -1,6 +1,8 @@
+import numpy as np
+import os
+import platform
 import pygame
 import time
-import numpy as np
 
 # ======================= Print game part ======================= 
 class PygamePrint():
@@ -20,6 +22,22 @@ class PygamePrint():
         pygame.init()
         self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Mario Bros")
+        
+        current_os = platform.system()
+
+        if current_os == "Windows":
+            # Windows-specific code to bring the Pygame window to the foreground
+            import win32gui
+            import win32con
+            
+            hwnd = pygame.display.get_wm_info()["window"]
+            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 800, 600, 0)
+            win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 800, 600, 0)
+        elif current_os == "Linux":
+            # Linux-specific code to bring the Pygame window to the foreground
+            os.system("wmctrl -r :ACTIVE: -b add,above")
+            
+        # I can't test under macOS and I haven't found anything to bring the Pygame window to the foreground
     
     def draw_arrow(self, direction, x, y) -> None:
         center = (x + self.CELL_SIZE // 3, y + self.CELL_SIZE // 2)
