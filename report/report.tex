@@ -1,0 +1,135 @@
+\documentclass[a4paper,12pt]{article}
+
+%------------------------------------------------------------------------------------------%
+% Déclaration des packages
+%------------------------------------------------------------------------------------------%
+
+\usepackage[french]{babel}
+\frenchbsetup{StandardLists=true}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage{geometry} % pour gérer les dimensions des marges
+\usepackage{eso-pic} % pour dessiner la marge
+\usepackage{lipsum} % pour générer du contenu texte
+\usepackage[cyr]{aeguill} % Police vectorielle TrueType, guillemets fran¸cais
+\usepackage{epsfig} % pour g´erer les images
+\usepackage{amsmath, amsthm} % tr`es bon mode math´ematique
+\usepackage{amsfonts,amssymb}% permet la definition des ensembles
+\usepackage{float} % pour le placement des figure
+\usepackage{url} 
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{array}	
+\usepackage{listings}
+\usepackage{siunitx}
+\usepackage{fancybox}
+\usepackage{wrapfig}
+\usepackage{caption}
+ \usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+\title{Football predictor}
+\geometry{top=25mm, bottom=25mm, left=20mm, right=1cm}
+\setlength\headheight{10mm}
+\DeclareUnicodeCharacter{2212}{-}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\newcommand{\chatgptprompt}[1]{
+    \vspace{10pt}
+    \noindent\textbf{ChatGPT Prompt:}\\
+    \fbox{
+        \parbox{\textwidth}{
+            \texttt{#1}
+        }
+    }
+    \vspace{10pt}
+}
+
+
+
+\geometry{a4paper, margin=1in}
+
+\title{\huge\bf Apprentissage par Renforcement}
+\date{21/10/2024}
+\author{CouscousSamba} 
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \includegraphics[width=0.3\textwidth]{images/DS4HlogocouleurFR.png} \hfill
+        \includegraphics[width=0.3\textwidth]{images/logo_master.png} \hfill
+        \includegraphics[width=0.23\textwidth]{images/tampon-3IA.png}
+        
+        \vspace{1.5cm}
+        
+        \textbf{\LARGE Université C\^ote d'Azur}
+        
+        \vspace{0.5cm}
+        
+        \textbf{\Large Master Informatique, parcours Intelligence Artificielle}
+        
+        \vspace{1.5cm}
+        
+        \textbf{\Large Project report}
+        
+        \vspace{0.5cm}
+        
+        \rule{\linewidth}{0.5mm} \\[0.4cm]
+        {\LARGE \bfseries Apprentissage par Renforcement sur Mario Bross \\[0.2cm]}
+        \rule{\linewidth}{0.5mm} \\[1.5cm]
+        
+        \textbf{Authors:} \\
+        DE SEROUX Colin \& HADDOU Amine   \\
+        
+        \vspace{0.8cm}
+        
+        \textbf{Supervised by:} \\
+        MARTINET Jean\\
+        
+        \vspace{1.5cm}
+        
+        \textbf{Due Date:} \\
+        \today
+        
+    \end{center}
+\end{titlepage}
+\newpage
+\maketitle
+\tableofcontents
+
+\newpage
+
+\maketitle
+
+\section{Introduction}
+L'objectif de ce projet est de développer un modèle d'apprentissage par renforcement appliqué au contexte des jeux vidéo. Nous avons choisi d'utiliser le célèbre jeu \textit{Super Mario Bros} comme environnement d'entraînement pour notre modèle. L'idée est de faire en sorte que le modèle puisse apprendre à terminer un niveau personnalisé en franchissant des obstacles tout au long du parcours.
+
+\section{Description de l'environnement}
+Le modèle doit parcourir une carte personnalisée comprenant des obstacles tels que des trous, des blocs qui obstruent le passage et d'autres qui empêchent les sauts. Le modèle dispose de deux actions possibles : avancer ou sauter. L'action "sauter" permet au modèle de se déplacer de deux cases en avant, en sautant au-dessus de la case adjacente. 
+
+\section{Algorithmes d'apprentissage}
+Pour entraîner notre modèle, nous avons décidé d'explorer deux types d'algorithmes d'apprentissage par renforcement : \textit{Q-Learning} et \textit{Monte Carlo Tree Search} (MCTS). Dans ce rapport, nous détaillerons dans un premier temps la mise en œuvre du \textit{Q-Learning}, tandis que la partie concernant \textit{MCTS} sera traitée ultérieurement.
+
+\subsection{Q-Learning}
+Le \textit{Q-Learning} est un algorithme d'apprentissage par renforcement hors-ligne qui vise à apprendre une politique optimale pour maximiser le cumul des récompenses au fil du temps. Dans notre cas, nous avons paramétré le modèle de la manière suivante :
+\begin{itemize}
+    \item \textbf{Epsilon-greedy strategy :} Nous avons initialisé $\epsilon$ à 1 avec un taux de décroissance de 0.001. À chaque épisode, $\epsilon$ est mis à jour selon la formule suivante : 
+    \[
+    \epsilon = (\text{episodes} - \text{episode}) \times \text{decay}
+    \]
+    Cela permet de s'assurer que l'exploration est dominante au début de l'entraînement, tandis que l'exploitation devient progressivement plus importante en fin d'apprentissage.
+    \item \textbf{Fonction de récompense :} Un trou sur le parcours fait perdre 100 points ($-100$), tandis que terminer un niveau rapporte 100 points  (états finaux). Il est également possible de collecter des pièces qui rapportent 50 points. À chaque pas, une pénalité de $-1$ est appliquée pour inciter le modèle à optimiser ses mouvements et terminer le niveau plus rapidement (~300 épisodes pour un modèle finissant le jeu de manière poussive).
+    \item \textbf{Paramètres d'apprentissage :} Nous avons choisi un taux d'apprentissage de 0.1 et un facteur de discount ($\gamma$) de 0.99 pour mettre l'accent sur les récompenses futures.
+\end{itemize}
+
+\section{Résultats et Conclusion}
+L'implémentation de notre modèle d'apprentissage par renforcement à l'aide de l'algorithme \textit{Q-Learning} a été couronnée de succès. Le modèle a réussi à apprendre efficacement à éviter les obstacles et à collecter les pièces tout en atteignant l'état final, qui est la fin du niveau. L'utilisation de la stratégie $\epsilon$-greedy a permis un équilibre adéquat entre exploration et exploitation au cours de l'entraînement, tandis que la fonction de récompense et les paramètres d'apprentissage ont favorisé une convergence rapide vers une politique optimale.
+
+
+
+
+\end{document}

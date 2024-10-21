@@ -1,6 +1,5 @@
 /__pycache__/
 Pipfile.lock
-report/
 report/*
 !report/*.pdf
 !report/*.tex
