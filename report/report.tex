@@ -27,109 +27,119 @@
 \usepackage{fancybox}
 \usepackage{wrapfig}
 \usepackage{caption}
- \usepackage{hyperref}
+\usepackage[colorlinks, citecolor=red!60!green, linkcolor=blue!60!green, urlcolor=magenta]{hyperref}
 \usepackage{listings}
 \usepackage{xcolor}
 
-
-\title{Football predictor}
-\geometry{top=25mm, bottom=25mm, left=20mm, right=1cm}
-\setlength\headheight{10mm}
-\DeclareUnicodeCharacter{2212}{-}
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\renewcommand{\thefootnote}{\fnsymbol{footnote}}
-\newcommand{\chatgptprompt}[1]{
-    \vspace{10pt}
-    \noindent\textbf{ChatGPT Prompt:}\\
-    \fbox{
-        \parbox{\textwidth}{
-            \texttt{#1}
-        }
-    }
-    \vspace{10pt}
-}
-
-
-
 \geometry{a4paper, margin=1in}
 
-\title{\huge\bf Apprentissage par Renforcement}
-\date{21/10/2024}
-\author{CouscousSamba} 
 \begin{document}
+    \begin{titlepage}
+        \begin{center}
+            \includegraphics[width=0.3\textwidth]{images/DS4HlogocouleurFR.png} \hfill
+            \includegraphics[width=0.3\textwidth]{images/logo_master.png} \hfill
+            \includegraphics[width=0.23\textwidth]{images/tampon-3IA.png}
+            
+            \vspace{1.5cm}
+            
+            \textbf{\LARGE Université C\^ote d'Azur}
+            
+            \vspace{0.5cm}
+            
+            \textbf{\Large Master Informatique, parcours Intelligence Artificielle}
+            
+            \vspace{1.5cm}
+            
+            \textbf{\Large Project report}
+            
+            \vspace{0.5cm}
+            
+            \rule{\linewidth}{0.5mm} \\[0.4cm]
+            {\LARGE \bfseries Apprentissage par Renforcement sur Mario Bros \\[0.2cm]}
+            \rule{\linewidth}{0.5mm} \\[1.5cm]
+            
+            \textbf{Réalisé par:} \\
+            DE SEROUX Colin \& HADDOU Amine   \\
+            
+            \vspace{0.8cm}
+            
+            \textbf{Encadré par:} \\
+            MARTINET Jean\\
+            
+            \vspace{1.5cm}
+            
+            \textbf{Le:} \\
+            \today
+            
+        \end{center}
+    \end{titlepage}
+    
+    \title{\huge\bf Apprentissage par Renforcement}
+    \date{21/10/2024}
+    \author{Mario Bros} 
+    
+    \newpage
+    
+    \maketitle
+    
+    \tableofcontents
+    
+    \newpage
+    
+    \maketitle
+    
+    \section{Introduction}
+    
+        L'objectif de ce projet est de développer un modèle d'apprentissage par renforcement appliqué au contexte des jeux vidéo. Nous avons choisi d'utiliser le célèbre jeu \textit{Super Mario Bros} comme environnement d'entraînement pour notre modèle. L'idée est de faire en sorte que le modèle puisse apprendre à terminer un niveau personnalisé en franchissant des obstacles tout au long du parcours.
+    
+    \section{Description de l'environnement}
+    
+        Le modèle doit parcourir une carte personnalisée comprenant des obstacles tels que des trous, des blocs qui obstruent le passage et d'autres qui empêchent les sauts. Le modèle dispose de deux actions possibles : avancer ou sauter. L'action "sauter" permet au modèle de se déplacer de deux cases en avant, en sautant au-dessus de la case adjacente. Vous trouverez le détaille des actions \href{https://www.google.com}{ici}.
+    
+    \section{Algorithmes d'apprentissage}
+    
+        Pour entraîner notre modèle, nous avons décidé d'explorer deux types d'algorithmes d'apprentissage par renforcement : \textit{Q-Learning} et \textit{Monte Carlo Tree Search} (MCTS). Dans ce rapport, nous détaillerons dans un premier temps la mise en œuvre du \textit{Q-Learning}, tandis que la partie concernant \textit{MCTS} sera traitée ultérieurement.
+        
+        \subsection{Q-Learning}
+        
+            Le \textit{Q-Learning} est un algorithme d'apprentissage par renforcement hors-ligne qui vise à apprendre une politique optimale pour maximiser le cumul des récompenses au fil du temps. Dans notre cas, nous avons paramétré le modèle de la manière suivante :
+            
+            \begin{itemize}
+                \item \textbf{Epsilon-greedy strategy :} Nous avons initialisé $\epsilon$ à 1 avec un taux de décroissance de 0.001. À chaque épisode, $\epsilon$ est mis à jour selon la formule suivante : 
+                \[
+                \epsilon = (\text{episodes} - \text{episode}) \times \text{decay}
+                \]
+                Cela permet de s'assurer que l'exploration est dominante au début de l'entraînement, tandis que l'exploitation devient progressivement plus importante en fin d'apprentissage.
+                
+                \item \textbf{Fonction de récompense :} Un trou sur le parcours fait perdre 100 points ($-100$), tandis que terminer un niveau rapporte 100 points  (états finaux). Il est également possible de collecter des pièces qui rapportent 5 points. À chaque pas, une pénalité de $-1$ est appliquée pour inciter le modèle à optimiser ses mouvements et terminer le niveau plus rapidement (~300 épisodes pour un modèle finissant le jeu de manière poussive).
+                
+                \item \textbf{Paramètres d'apprentissage :} Nous avons choisi un taux d'apprentissage de 0.1 et un facteur de discount ($\gamma$) de 0.99 pour mettre l'accent sur les récompenses futures.
+            \end{itemize}
 
-\begin{titlepage}
-    \begin{center}
-        \includegraphics[width=0.3\textwidth]{images/DS4HlogocouleurFR.png} \hfill
-        \includegraphics[width=0.3\textwidth]{images/logo_master.png} \hfill
-        \includegraphics[width=0.23\textwidth]{images/tampon-3IA.png}
+        \subsection{MCTS}
         
-        \vspace{1.5cm}
-        
-        \textbf{\LARGE Université C\^ote d'Azur}
-        
-        \vspace{0.5cm}
-        
-        \textbf{\Large Master Informatique, parcours Intelligence Artificielle}
-        
-        \vspace{1.5cm}
-        
-        \textbf{\Large Project report}
-        
-        \vspace{0.5cm}
-        
-        \rule{\linewidth}{0.5mm} \\[0.4cm]
-        {\LARGE \bfseries Apprentissage par Renforcement sur Mario Bross \\[0.2cm]}
-        \rule{\linewidth}{0.5mm} \\[1.5cm]
-        
-        \textbf{Authors:} \\
-        DE SEROUX Colin \& HADDOU Amine   \\
-        
-        \vspace{0.8cm}
-        
-        \textbf{Supervised by:} \\
-        MARTINET Jean\\
-        
-        \vspace{1.5cm}
-        
-        \textbf{Due Date:} \\
-        \today
-        
-    \end{center}
-\end{titlepage}
-\newpage
-\maketitle
-\tableofcontents
+            L'algorithme \textit{MCTS} (Monte Carlo Tree Search) est une méthode d'exploration efficace pour les jeux et les problèmes de décision. Il combine la recherche aléatoire et l'optimisation des décisions, ce qui le rend particulièrement adapté aux environnements complexes avec de nombreuses possibilités d'actions. L'algorithme suit quatre phases principales : \textbf{séléction}, \textbf{expansion}, \textbf{simulation} et \textbf{backpropagation}. En construisant un arbre de décision basé sur des simulations de jeux, \textit{MCTS} permet de déterminer la meilleure action à entreprendre, en tenant compte des résultats passés.
+            
+            \begin{itemize}
+                \item Dans le contexte de mon jeu, où le joueur se déplace sur une grille avec comme actions \textbf{avancer} ou \textbf{sauter}, l'algorithme \textit{MCTS} joue un rôle clé dans la prise de décision. Au début de chaque tour, \textit{MCTS} exécute plusieurs itérations pour simuler des mouvements possibles à partir de l'état actuel du jeu. Chaque nœud de l'arbre représente un état spécifique du jeu, et les branches représentent les actions réalisables. Ce processus permet à l'algorithme d'explorer à la fois des mouvements connus et de nouveaux mouvements, en s'assurant d'optimiser les décisions en fonction des résultats des simulations.
 
-\newpage
+                \item Le fonctionnement de \textit{MCTS} peut être divisé en quatre phases. \textbf{La sélection} consiste à parcourir l'arbre des états jusqu'à atteindre un nœud non complètement exploré ou une feuille. \textbf{L'expansion} ajoute un nouveau nœud à l'arbre pour un mouvement non encore exploré. \textbf{La simulation} implique de jouer une série de mouvements aléatoires jusqu'à la fin de la partie, permettant d'estimer le résultat potentiel de cet état. Enfin, \textbf{la backpropagation} ajuste les valeurs des nœuds parent en fonction du résultat de la simulation, améliorant ainsi la précision des estimations pour les décisions futures.
+                
+                \item L'efficacité de \textit{MCTS} repose sur l'équilibre entre exploration et exploitation. L'algorithme utilise une stratégie appelée UCT (Upper Confidence Bound for Trees) pour choisir les mouvements, favorisant les actions avec un faible nombre de visites tout en tenant compte de leur score moyen. Cela permet à \textit{MCTS} de découvrir de nouvelles stratégies tout en optimisant les meilleures options déjà identifiées. En somme, \textit{MCTS}, en intégrant ces mécanismes d'exploration, améliore considérablement la capacité du joueur à prendre des décisions éclairées, ce qui se traduit par des performances optimales dans le jeu.
 
-\maketitle
+                \item De plus, pour améliorer la recherche et la rapidité, j'ai fait en sorte que, non seulement le score final, les trous ou les pièces soient pris en compte, mais aussi le fait d'avancer. Le reward se calcule donc par :
+                \[
+                \text{reward} = \text{score} + \frac{\text{player\_pos[0]} - \text{start\_pos[0]}}{100}
+                \]
+                ce qui permet d'obtenir de meilleurs résultats avec un nombre d'itérations plus faible, vu qu'il va toujours essayer d'avancer (il va surtout beaucoup sauter, vu que cela fait 2 déplacements en 1 action dans certaines configurations. Il en est de même pour le \textit{Q-Learning}).
+            \end{itemize}
+    
+    \section{Résultats et Conclusion}
+    
+        L'implémentation de notre modèle d'apprentissage par renforcement à l'aide de l'algorithme \textit{Q-Learning} a été couronnée de succès. Le modèle a réussi à apprendre efficacement à éviter les obstacles et à collecter les pièces tout en atteignant l'état final, qui est la fin du niveau. L'utilisation de la stratégie $\epsilon$-greedy a permis un équilibre adéquat entre exploration et exploitation au cours de l'entraînement, tandis que la fonction de récompense et les paramètres d'apprentissage ont favorisé une convergence rapide vers une politique optimale.
+        
+        De même, l'algorithme \textit{MCTS} parvient sans difficulté à terminer la partie en récupérant les pièces sans tomber dans les trous. De plus, \textit{MCTS}, contrairement au \textit{Q-Learning}, n'a pas besoin d'entraînement, ce qui permet de le déployer directement sur d'autres nouvelles cartes.
 
-\section{Introduction}
-L'objectif de ce projet est de développer un modèle d'apprentissage par renforcement appliqué au contexte des jeux vidéo. Nous avons choisi d'utiliser le célèbre jeu \textit{Super Mario Bros} comme environnement d'entraînement pour notre modèle. L'idée est de faire en sorte que le modèle puisse apprendre à terminer un niveau personnalisé en franchissant des obstacles tout au long du parcours.
-
-\section{Description de l'environnement}
-Le modèle doit parcourir une carte personnalisée comprenant des obstacles tels que des trous, des blocs qui obstruent le passage et d'autres qui empêchent les sauts. Le modèle dispose de deux actions possibles : avancer ou sauter. L'action "sauter" permet au modèle de se déplacer de deux cases en avant, en sautant au-dessus de la case adjacente. 
-
-\section{Algorithmes d'apprentissage}
-Pour entraîner notre modèle, nous avons décidé d'explorer deux types d'algorithmes d'apprentissage par renforcement : \textit{Q-Learning} et \textit{Monte Carlo Tree Search} (MCTS). Dans ce rapport, nous détaillerons dans un premier temps la mise en œuvre du \textit{Q-Learning}, tandis que la partie concernant \textit{MCTS} sera traitée ultérieurement.
-
-\subsection{Q-Learning}
-Le \textit{Q-Learning} est un algorithme d'apprentissage par renforcement hors-ligne qui vise à apprendre une politique optimale pour maximiser le cumul des récompenses au fil du temps. Dans notre cas, nous avons paramétré le modèle de la manière suivante :
-\begin{itemize}
-    \item \textbf{Epsilon-greedy strategy :} Nous avons initialisé $\epsilon$ à 1 avec un taux de décroissance de 0.001. À chaque épisode, $\epsilon$ est mis à jour selon la formule suivante : 
-    \[
-    \epsilon = (\text{episodes} - \text{episode}) \times \text{decay}
-    \]
-    Cela permet de s'assurer que l'exploration est dominante au début de l'entraînement, tandis que l'exploitation devient progressivement plus importante en fin d'apprentissage.
-    \item \textbf{Fonction de récompense :} Un trou sur le parcours fait perdre 100 points ($-100$), tandis que terminer un niveau rapporte 100 points  (états finaux). Il est également possible de collecter des pièces qui rapportent 50 points. À chaque pas, une pénalité de $-1$ est appliquée pour inciter le modèle à optimiser ses mouvements et terminer le niveau plus rapidement (~300 épisodes pour un modèle finissant le jeu de manière poussive).
-    \item \textbf{Paramètres d'apprentissage :} Nous avons choisi un taux d'apprentissage de 0.1 et un facteur de discount ($\gamma$) de 0.99 pour mettre l'accent sur les récompenses futures.
-\end{itemize}
-
-\section{Résultats et Conclusion}
-L'implémentation de notre modèle d'apprentissage par renforcement à l'aide de l'algorithme \textit{Q-Learning} a été couronnée de succès. Le modèle a réussi à apprendre efficacement à éviter les obstacles et à collecter les pièces tout en atteignant l'état final, qui est la fin du niveau. L'utilisation de la stratégie $\epsilon$-greedy a permis un équilibre adéquat entre exploration et exploitation au cours de l'entraînement, tandis que la fonction de récompense et les paramètres d'apprentissage ont favorisé une convergence rapide vers une politique optimale.
-
-
-
+        Dans les deux cas, les algorithmes sont une réussite, avec un temps d'entraînement inférieur à 1 seconde pour le \textit{Q-Learning} sur une carte de plus de 45 blocs de large, et moins de 0,1 seconde pour chaque coup pour \textit{MCTS}.
 
 \end{document}

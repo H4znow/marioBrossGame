@@ -106,3 +106,11 @@
 🟦🟦🟦🟦🟦🟦🟦
 
 ![Gameplay](./assets/gameplay.gif)
+
+<br>
+
+# <span style="font-size:27px; font-family:'Comic Sans MS', cursive">Report</span><br />
+
+🟦🟦🟦🟦🟦
+
+<span style="font-size:17px; font-family:'Comic Sans MS', cursive">You can find the project report in French [here](https://github.com/H4znow/marioBrossGame/blob/main/report/report.pdf).</span>
