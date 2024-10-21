@@ -111,7 +111,7 @@
                 \]
                 Cela permet de s'assurer que l'exploration est dominante au début de l'entraînement, tandis que l'exploitation devient progressivement plus importante en fin d'apprentissage.
                 
-                \item \textbf{Fonction de récompense :} Un trou sur le parcours fait perdre 100 points ($-100$), tandis que terminer un niveau rapporte 100 points  (états finaux). Il est également possible de collecter des pièces qui rapportent 5 points. À chaque pas, une pénalité de $-1$ est appliquée pour inciter le modèle à optimiser ses mouvements et terminer le niveau plus rapidement (~300 épisodes pour un modèle finissant le jeu de manière poussive).
+                \item \textbf{Fonction de récompense :} Un trou sur le parcours fait perdre 100 points ($-100$), tandis que terminer un niveau rapporte 100 points  (états finaux). Il est également possible de collecter des pièces qui rapportent 5 points. À chaque pas, une pénalité de $-1$ est appliquée pour inciter le modèle à optimiser ses mouvements et terminer le niveau plus rapidement.
                 
                 \item \textbf{Paramètres d'apprentissage :} Nous avons choisi un taux d'apprentissage de 0.1 et un facteur de discount ($\gamma$) de 0.99 pour mettre l'accent sur les récompenses futures.
             \end{itemize}
