@@ -97,7 +97,7 @@ class MCTSPlayer:
             random_move = random.choice(possible_moves)
             game.new_event(random_move)
 
-        return game.get_reward()
+        return game.get_reward("mcts")
 
     def serialize(self, game) -> tuple:
         # Serialize the game state as a string (player position + grid)

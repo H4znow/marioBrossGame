@@ -99,7 +99,7 @@ class Game:
         elif action == 1:
             self.new_event("JUMP")
         
-        return self.get_reward(), not self.running
+        return self.get_reward("q_learning"), not self.running
     
     def get_random_action(self) -> int:
         # Choose randomly between RIGHT and JUMP
@@ -122,8 +122,11 @@ class Game:
         return Game(copy.deepcopy(self.player_pos), copy.deepcopy(self.grid), False)
 
     # Reward system for win, loss, or intermediate steps
-    def get_reward(self) -> float:
+    def get_reward(self, type) -> float:
         if not self.running:
-            return self.score + (self.player_pos[0] - self.start_pos[0]) / 100  # There's also a reward for getting around  # The score is already set on victory/loss
+            if type == "mcts":
+                return self.score + (self.player_pos[0] - self.start_pos[0]) / 100  # There's also a reward for getting around  # The score is already set on victory/loss
+            
+            return self.score
         
         return 0
