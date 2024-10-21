@@ -1,0 +1,8 @@
+/__pycache__/
+Pipfile.lock
+
+# Report
+/report/*
+!/report/*.pdf
+!/report/*.tex
+!/report/images/

@@ -8,8 +8,8 @@ import time
 class PygamePrint():
     def __init__(self, game, qtable=False, wait_time=0.03) -> None:
         self.game = game
-        self.WIDTH, self.HEIGHT = 600, 300
         self.CELL_SIZE = 50
+        self.WIDTH, self.HEIGHT = 600, self.game.ROWS * self.CELL_SIZE
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.FILLED_FINISH_COLOR = (255, 0, 0)
