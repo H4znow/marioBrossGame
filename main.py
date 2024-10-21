@@ -24,21 +24,21 @@ player_pos = [5, 3]
 
 def choose_player():
     user_input = input(
-        "Choisissez un joueur :\n"
+        "Choose a player :\n"
         "1) Human player\n"
         "2) Bot player\n"
         "3) MCTS player\n"
         "4) Learning player for Q-table\n"
         "5) Q-table player\n"
-        "Votre choix : "
+        "Your choice : "
     )
     
     def print_q_table():
         user_input = input(
-            "Voulez-vous afficher la Q-table pour voir la différence ?\n"
-            "0) non\n"
-            "1) oui :\n"
-            "Votre choix : "
+            "Display the Q-table to see the difference ?\n"
+            "0) no\n"
+            "1) yes\n"
+            "Your choice : "
         )
         
         options = {
@@ -49,7 +49,7 @@ def choose_player():
         if user_input in options:
             return options[user_input]
         
-        print("Choix invalide. Veuillez réessayer.")
+        print("Invalid choice. Please try again.")
         print_q_table()
 
     def human_player():
@@ -72,10 +72,10 @@ def choose_player():
     
     def print_game():
         user_input = input(
-            "Voulez-vous afficher en direct l'avancement (cela est plus lent) ?\n"
-            "0) non\n"
-            "1) oui :\n"
-            "Votre choix : "
+            "Do you want to view live progress (this is slower) ?\n"
+            "0) no\n"
+            "1) yes\n"
+            "Your choice : "
         )
         
         options = {
@@ -86,7 +86,7 @@ def choose_player():
         if user_input in options:
             return options[user_input]
         
-        print("Choix invalide. Veuillez réessayer.")
+        print("Invalid choice. Please try again.")
         print_game()
 
     def learning_q_table():
@@ -111,7 +111,7 @@ def choose_player():
     if user_input in options:
         options[user_input]()
     else:
-        print("Choix invalide. Veuillez réessayer.")
+        print("Invalid choice. Please try again.")
         choose_player()
 
 choose_player()
