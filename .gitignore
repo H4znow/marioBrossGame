@@ -6,3 +6,4 @@ Pipfile.lock
 !/report/*.pdf
 !/report/*.tex
 !/report/images/
+!/report/*.pptx
